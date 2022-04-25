@@ -1,3 +1,6 @@
+// Author: Xingtang Sun - ni18223@bristol.ac.uk
+// Date: 25th April 2022
+
 #include "sds_lib.h"
 #include "knl_kmeans.h"
 #include <sys/ioctl.h>
