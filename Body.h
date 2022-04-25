@@ -1,3 +1,6 @@
+// Author: Xingtang Sun - ni18223@bristol.ac.uk
+// Date: 25th April 2022
+
 #include "knl_kmeans.h"
 #include "KMEANS.h"
 
@@ -11,7 +14,6 @@ public:
         switch (id)
         {
         case 1:
-
             dist_out = (float *)sds_alloc((end-begin)*k*sizeof(float));
             if(!dist_out){
                 cout << "Unable to allocate accelerator output memory" << endl;

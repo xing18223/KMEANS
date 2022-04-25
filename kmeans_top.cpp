@@ -1,3 +1,6 @@
+// Author: Xingtang Sun - ni18223@bristol.ac.uk
+// Date: 25th April 2022
+
 #include "../KMEANS/schedulers/MultiDynamic.h"
 #include "sds_lib.h"
 #include "Body.h"
@@ -40,6 +43,7 @@ int main(int argc, char* argv[]){
     p.gpuChunk = atoi(argv[8]);
     Dynamic *hs = Dynamic::getInstance(&p);
 
+    // Global arrays for points and clusters
     points = (float *)sds_alloc((dim+2)*n*sizeof(float));
     clusters = (float *)sds_alloc(((2*dim)+2)*k*sizeof(float));
     if(!points||!clusters){
