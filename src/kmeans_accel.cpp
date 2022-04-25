@@ -17,7 +17,7 @@ const int MAX_DIM = 150;
 const int MAX_PTS = 2000;
 const int MAX_CLS = 100;
 
-//---------------------------------------------//
+// Host-accelerator interface configuration 
 #pragma SDS data sys_port(points_ptr: ps_e_S_AXI_HPC0_FPD)
 #pragma SDS data sys_port(clusters: ps_e_S_AXI_HPC0_FPD)
 #pragma SDS data sys_port(dist_out: ps_e_S_AXI_HPC0_FPD)
@@ -30,6 +30,7 @@ const int MAX_CLS = 100;
 #pragma SDS data mem_attribute(clusters: PHYSICAL_CONTIGUOUS)
 #pragma SDS data mem_attribute(dist_out: PHYSICAL_CONTIGUOUS)
 
+// Kmeans accelerator function
 void kmeans_accel(float *points_ptr, float *clusters, float *dist_out, int k, int dim, int begin, int end){
 
 	// Local buffers
@@ -49,12 +50,12 @@ void kmeans_accel(float *points_ptr, float *clusters, float *dist_out, int k, in
 	int local_end = end;
 
     for(int i=0; i<(local_end-local_begin)*(local_dim+2); i++){ // Burst read from global to local
-		#pragma HLS loop_tripcount min=MAX_PTS*(MAX_DIM+2) max=MAX_PTS*(MAX_DIM+2)
+		#pragma HLS loop_tripcount min=MAX_PTS*(MAX_DIM+2) max=MAX_PTS*(MAX_DIM+2) // loop_tricount - used for performance estimate only, no impact on synthesis
 		#pragma HLS PIPELINE
     	local_points[i] = points_ptr[i];
     }
     for(int j=0; j<local_k*(2+(local_dim*2)); j++){
-		#pragma HLS loop_tripcount min=MAX_CLS*(2+(2*MAX_DIM)) max=MAX_CLS*(2+(2*MAX_DIM))
+		#pragma HLS loop_tripcount min=MAX_CLS*(2+(2*MAX_DIM)) max=MAX_CLS*(2+(2*MAX_DIM)) 
 		#pragma HLS PIPELINE
         local_clusters[j] = clusters[j];
     }
@@ -62,7 +63,7 @@ void kmeans_accel(float *points_ptr, float *clusters, float *dist_out, int k, in
 	// chunk x k distances computed
     for(int j=0; j<local_k; j++){
 		#pragma HLS unroll factor=MAX_CLS/2
-		#pragma HLS loop_tripcount min=MAX_CLS max=MAX_CLS
+		#pragma HLS loop_tripcount min=MAX_CLS max=MAX_CLS 
         for(int i=0; i<(local_end-local_begin); i++){
 			#pragma HLS loop_tripcount min=MAX_PTS max=MAX_PTS
         	float dist = 0;
